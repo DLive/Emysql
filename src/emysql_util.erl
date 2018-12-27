@@ -24,7 +24,6 @@
 %% WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 %% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 %% OTHER DEALINGS IN THE SOFTWARE.
-%% @deprecated Please use the functions in {@link emysql} instead.
 -module(emysql_util).
 
 %% Query data
@@ -32,7 +31,8 @@
 	affected_rows/1,
 	field_names/1,
 	insert_id/1,
-	result_type/1
+	result_type/1,
+    prop_get_value/3
 ]).
 
 %% Conversion routines
@@ -42,6 +42,11 @@
          as_proplist/1,
          as_record/3,
          as_record/4
+]).
+
+%% Erlang version-specific functions
+-export([
+	timestamp/0
 ]).
 
 affected_rows(P) -> emysql:affected_rows(P).
@@ -55,3 +60,14 @@ as_proplist(Res) -> emysql:as_proplist(Res).
 as_record(Res, RecName, Fields) -> emysql:as_record(Res, RecName, Fields).
 as_record(Res, RecName, Fields, Fun) -> emysql:as_record(Res, RecName, Fields, Fun).
 
+prop_get_value(K, L, D) ->
+    case lists:keyfind(K, 1, L) of
+        {K, V} -> V;
+        false  -> D
+    end.
+
+-ifdef(timestamp_support).
+timestamp() -> os:timestamp().
+-else.
+timestamp() -> erlang:now().
+-endif.

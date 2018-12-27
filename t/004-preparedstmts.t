@@ -20,7 +20,7 @@ main(_) ->
 								)"),
 	etap:is(is_record(Foo, ok_packet), true, "create table returned ok packet"),
 	
-	[Pool] = emysql_conn_mgr:pools(),
+	[Pool] = emysql_pool_mgr:pools(),
 		
 	Conn = hd(queue:to_list(Pool#pool.available)),
 	etap:is(emysql_statements:all(), {state, gb_trees:empty(), gb_trees:empty()}, "statements are empty"),

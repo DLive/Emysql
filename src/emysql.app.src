@@ -3,13 +3,19 @@
 %% lock_timeout (LOCK_TIMEOUT = 5000)
 
 {application, emysql, [
+    {pkg_name, inaka_emysql},
     {description, "Emysql - Erlang MySQL driver"},
-    {vsn, "0.4.2"},
-    {modules, []}, 
+    {vsn, "0.5.0"},
+    {modules, []},
     {mod, {emysql_app, ["%MAKETIME%"]}},
     {registered, [emysql_conn_mgr, emysql_sup]},
+    {maintainers, ["Inaka"]},
+    {licenses, ["Apache 2.0"]},
+    {links, [{"Github", "https://github.com/inaka/Emysql"}]},
     {applications, [kernel, stdlib, crypto]},
     {env, [
       {default_timeout, 5000},
-      {conn_test_period, 28000}]}
+      {conn_test_period, 30000},
+      {retry_when_closed, false}]},
+    {build_tools, ["make", "rebar3"]}
 ]}.

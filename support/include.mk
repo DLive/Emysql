@@ -15,6 +15,19 @@ ifdef debug
   ERLC_FLAGS += -Ddebug
 endif
 
+## Check if we are on erlang version that has namespaced types
+ERL_NT := $(shell escript ../support/ntype_check.escript)
+## Check if we are on erlang version that has erlang:timestamp/0
+ERL_TS := $(shell escript ../support/timestamp_check.escript)
+
+ifeq ($(ERL_NT),true)
+	ERLC_FLAGS += -Dnamespaced_types
+endif
+
+ifeq ($(ERL_TS),true)
+	ERLC_FLAGS += -Dtimestamp_support
+endif
+
 EBIN_DIR := ../ebin
 DOC_DIR  := ../doc
 EMULATOR := beam
@@ -30,10 +43,9 @@ EBIN_FILES = $(ERL_OBJECTS) $(APP_FILES:%.app=../ebin/%.app) $(ERL_TEMPLATES)
 $(EBIN_DIR)/%.$(EMULATOR): %.erl $(ERL_HEADERS)
 	$(ERLC) $(ERLC_FLAGS) -o $(EBIN_DIR) $<
 
-./%.$(EMULATOR): %.erl
+./%.$(EMULATOR): %.erl	
 	$(ERLC) $(ERLC_FLAGS) -o . $<
 
 $(DOC_DIR)/%.html: %.erl
 	$(ERL) -noshell -run edoc file $< -run init stop
 	mv *.html $(DOC_DIR)
-

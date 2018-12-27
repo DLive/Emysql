@@ -1,7 +1,7 @@
 %%%-------------------------------------------------------------------
 %%% File     : Emysql/test/environment_SUITE.erl
 %%% Descr    : Suite #1 - testing the test setup, db and pathes =
-%%%            availability of crypto app, emysql app and test db. 
+%%%            availability of crypto app, emysql app and test db.
 %%% Author   : H. Diedrich
 %%% Created  : 12/13/2011 hd
 %%% Requires : Erlang 14B (prior may not have ct_run)
@@ -10,7 +10,7 @@
 %%% THIS SUITE DOES NO ACTUAL TESTS BUT CHECKS THE TEST DATABASE ETC.
 %%% Test Cases are in this high granularity for clear failure reports.
 %%%
-%%% Run from Emysql/: 
+%%% Run from Emysql/:
 %%%     make test
 %%%
 %%% Results see:
@@ -55,7 +55,7 @@
 
 % List of test cases.
 %%--------------------------------------------------------------------
-all() -> 
+all() ->
     [
         connecting_to_db_and_creating_a_pool_transition,
 
@@ -114,7 +114,7 @@ init_per_testcase(add_pool_env_all, Config) ->
     ok = application:start(emysql),
     Config;
 
-%TODO: Probably better to split out test suite into ones that expect the pool to exist and 
+%TODO: Probably better to split out test suite into ones that expect the pool to exist and
 % tests that are about setting up the pool.
 
 init_per_testcase(_TestCase, Config) ->
@@ -123,7 +123,7 @@ init_per_testcase(_TestCase, Config) ->
 % If the test created a pool, we should remove it. Note that we should do this even
 % For the tests that are supposed to fail, in case they accidentally succeed.
 
-end_per_testcase(_TestCase, _Config) ->  
+end_per_testcase(_TestCase, _Config) ->
     application:unset_env(emysql, pools),
     catch emysql:remove_pool(?POOL);
 
@@ -144,14 +144,14 @@ connecting_to_db_and_creating_a_pool_transition(_) ->
 
 
 add_pool_utf8(_) ->
-    emysql:add_pool(?POOL, [{user,test_helper:test_u()}, 
+    emysql:add_pool(?POOL, [{user,test_helper:test_u()},
 			    {password,test_helper:test_p()},
 			    {encoding, utf8}]),
     #result_packet{rows=[[<<"utf8">>]]} =
     emysql:execute(?POOL, <<"SELECT @@character_set_connection;">>).
 
 add_pool_utf8_with_collate(_) ->
-    emysql:add_pool(?POOL, [{user,test_helper:test_u()}, 
+    emysql:add_pool(?POOL, [{user,test_helper:test_u()},
 			    {password,test_helper:test_p()},
 			    {encoding, {utf8, utf8_unicode_ci}}]),
     #result_packet{rows=[[<<"utf8_unicode_ci">>]]} =
@@ -165,7 +165,7 @@ add_pool_utf8_deprecated(_) ->
     emysql:execute(?POOL, <<"SELECT @@character_set_connection;">>).
 
 add_pool_latin1(_) ->
-    emysql:add_pool(?POOL, [{user,test_helper:test_u()}, 
+    emysql:add_pool(?POOL, [{user,test_helper:test_u()},
 			    {password,test_helper:test_p()},
 			    {encoding, latin1}]),
     #result_packet{rows=[[<<"latin1">>]]} =
@@ -178,7 +178,7 @@ add_pool_latin1_deprecated(_) ->
     emysql:execute(?POOL, <<"SELECT @@character_set_connection;">>).
 
 add_pool_latin1_compatible(_) ->
-    emysql:add_pool(?POOL, [{user,test_helper:test_u()}, 
+    emysql:add_pool(?POOL, [{user,test_helper:test_u()},
 			    {password,test_helper:test_p()}]),
     #result_packet{rows=[[<<"latin1">>]]} =
     emysql:execute(?POOL, <<"SELECT @@character_set_connection;">>).
@@ -191,7 +191,7 @@ add_pool_latin1_compatible_deprecated(_) ->
 
 
 add_pool_time_zone(_) ->
-    emysql:add_pool(?POOL, [{user,test_helper:test_u()}, 
+    emysql:add_pool(?POOL, [{user,test_helper:test_u()},
 			    {password,test_helper:test_p()},
 			    {start_cmds,[<<"SET time_zone='+00:00'">>]}]),
     #result_packet{rows=[[<<"+00:00">>]]} =
@@ -236,7 +236,7 @@ add_pool_wrong_db(_) ->
             exit(should_have_failed)
     end,
     % Verify there are no connections added for real
-    [] = emysql_conn_mgr:pools().
+    [] = emysql_pool_mgr:pools().
 
 add_pool_wrong_cmd(_) ->
     {Pid, Mref} = spawn_monitor(fun() ->
@@ -252,7 +252,7 @@ add_pool_wrong_cmd(_) ->
             exit(should_have_failed)
     end,
     % Verify there are no connections added for real
-    [] = emysql_conn_mgr:pools().
+    [] = emysql_pool_mgr:pools().
 
 add_pool_port_should_be_a_number(_) ->
     {Pid, Mref} = spawn_monitor(fun() ->
@@ -271,14 +271,14 @@ add_pool_port_should_be_a_number(_) ->
             exit(should_have_failed)
     end,
     % Verify there are no connections added for real
-    [] = emysql_conn_mgr:pools().
+    [] = emysql_pool_mgr:pools().
 
 add_pool_size_should_be_a_number(_) ->
     {Pid, Mref} = spawn_monitor(fun() ->
-                emysql:add_pool(?POOL, [{size,"Ten"}, 
+                emysql:add_pool(?POOL, [{size,"Ten"},
 					{user,test_helper:test_u()},
 					{password,test_helper:test_p()}])
-					
+
         end
     ),
     receive
@@ -291,7 +291,7 @@ add_pool_size_should_be_a_number(_) ->
             exit(should_have_failed)
     end,
     % Verify there are no connections added for real
-    [] = emysql_conn_mgr:pools().
+    [] = emysql_pool_mgr:pools().
 
 add_pool_timeout_should_be_a_number(_) ->
     {Pid, Mref} = spawn_monitor(fun() ->
@@ -310,4 +310,4 @@ add_pool_timeout_should_be_a_number(_) ->
             exit(should_have_failed)
     end,
     % Verify there are no connections added for real
-    [] = emysql_conn_mgr:pools().
+    [] = emysql_pool_mgr:pools().

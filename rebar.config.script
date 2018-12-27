@@ -1,0 +1,14 @@
+{exports, ExportList} = lists:keyfind(exports,1,erlang:module_info()),
+Check = lists:member({timestamp,0},ExportList),
+case Check of
+	true ->
+		case lists:keyfind(erl_opts, 1, CONFIG) of
+			false ->
+				CONFIG ++ [{erl_opts,[{d,timestamp_support}]}];
+			{erl_opts, Opts} ->
+				NewOpts = {erl_opts, Opts ++ [{d,timestamp_support}]},
+				lists:keyreplace(erl_opts, 1, CONFIG, NewOpts)
+		end;
+	false ->
+		CONFIG
+end.

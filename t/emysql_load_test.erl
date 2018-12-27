@@ -69,7 +69,7 @@ init([]) ->
 %%--------------------------------------------------------------------
 handle_call(add_pool, _From, State) ->
 	NewPoolId = 
-		case lists:reverse(lists:usort([PoolId || #pool{pool_id=PoolId} <- emysql_conn_mgr:pools()])) of
+		case lists:reverse(lists:usort([PoolId || #pool{pool_id=PoolId} <- emysql_pool_mgr:pools()])) of
 			[] ->
 				test1;
 			[Last|_] ->
@@ -86,7 +86,7 @@ handle_call(add_pool, _From, State) ->
 	{reply, Res, State};
 	
 handle_call(remove_pool, _From, State) ->
-	case emysql_conn_mgr:pools() of
+	case emysql_pool_mgr:pools() of
 		[] ->
 			{reply, ok, State};
 		[Pool|_] ->
@@ -94,7 +94,7 @@ handle_call(remove_pool, _From, State) ->
 	end;	
 	
 handle_call(increment_pool_size, _From, State) ->
-	case emysql_conn_mgr:pools() of
+	case emysql_pool_mgr:pools() of
 		[] ->
 			{reply, ok, State};
 		[Pool|_] ->
@@ -102,7 +102,7 @@ handle_call(increment_pool_size, _From, State) ->
 	end;
 
 handle_call(decrement_pool_size, _From, State) ->
-	case emysql_conn_mgr:pools() of
+	case emysql_pool_mgr:pools() of
 		[] ->
 			{reply, ok, State};
 		[Pool|_] ->
@@ -168,7 +168,7 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%--------------------------------------------------------------------
 get_pool() ->
-	case emysql_conn_mgr:pools() of
+	case emysql_pool_mgr:pools() of
 		[] -> undefined;
 		[Pool|_] -> Pool
 	end.

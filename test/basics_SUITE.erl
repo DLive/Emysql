@@ -120,7 +120,6 @@ end_per_suite(_Config) ->
 %% Test Case: Delete all records in the test database
 %%--------------------------------------------------------------------
 delete_all(_) ->
-
     emysql:execute(test_pool, <<"DELETE FROM hello_table">>),
     ok.
 
@@ -128,7 +127,6 @@ delete_all(_) ->
 %% Test Case: Make an Insert
 %%--------------------------------------------------------------------
 insert_only(_) ->
-
     emysql:execute(test_pool,
         <<"INSERT INTO hello_table SET hello_text = 'Hello World!'">>),
 
