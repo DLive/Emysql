@@ -367,7 +367,15 @@ test_connection(PoolServer, Conn, StayLocked) ->
         {error, FailedReset} ->
           exit({connection_down, {and_conn_reset_failed, FailedReset}})
       end;
-    _ ->
+      #error_packet{code = 1053,msg = _} ->
+
+          case reset_connection(PoolServer, emysql_conn_mgr:pools(PoolServer), Conn, StayLocked) of
+              NewConn when is_record(NewConn, emysql_connection) ->
+                  NewConn;
+              {error, FailedReset} ->
+                  exit({connection_down, {and_conn_reset_failed, FailedReset}})
+          end;
+      _ ->
        NewConn = Conn#emysql_connection{last_test_time = now_seconds()},
        case StayLocked of
          pass -> emysql_conn_mgr:replace_connection_as_available(PoolServer, Conn, NewConn);
